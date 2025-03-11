@@ -163,7 +163,7 @@ const SpinWheel: React.FC<SpinWheelProps> = ({
     const destinationAngle = 360 - segmentMiddleAngle; // The wheel rotates clockwise
     
     // Add extra rotations (2-5 full spins) to make the spin look natural
-    const extraRotations = Math.floor(Math.random() * 3) + 2;
+    const extraRotations = Math.floor(Math.random() * 3) + 3; // Increased minimum spins for smoother effect
     const totalRotation = destinationAngle + (extraRotations * 360);
     
     // Set the new total rotation (existing rotation + new rotation)
@@ -202,7 +202,11 @@ const SpinWheel: React.FC<SpinWheelProps> = ({
             boxShadow: '0 0 10px rgba(0,0,0,0.5)',
             border: `${outerBorderWidth}px solid ${outerBorderColor}`,
             transform: `rotate(${rotation}deg)`,
-            transition: isSpinning ? `transform ${duration/1000}s cubic-bezier(0.1, 0.25, 0.1, 1)` : 'none',
+            transition: isSpinning 
+              ? `transform ${duration/1000}s cubic-bezier(0.11, 0.68, 0.18, 1.03)` 
+              : 'none',
+            willChange: 'transform', // Optimize for animation performance
+            backfaceVisibility: 'hidden', // Improve animation smoothness
           }}
         >
           {/* SVG for wheel segments */}
