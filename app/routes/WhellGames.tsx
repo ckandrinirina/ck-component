@@ -8,20 +8,19 @@ interface WheelOption {
   label: string;
   color: string;
   icon?: React.ReactNode;
+  probability?: number; // Added probability field
 }
 
 const WhellGames = () => {
   // Set up state to track the selected option
   const [result, setResult] = useState<WheelOption | null>(null);
 
-  // Example wheel options with different colors and icons
+  // Example wheel options with different colors, icons, and probabilities
   const wheelOptions: WheelOption[] = [
-    { id: 1, label: 'Prize 1', color: '#E74C3C', icon: <FiGift size={20} /> },
-    { id: 2, label: 'Prize 2', color: '#3498DB', icon: <FiStar size={20} /> },
-    { id: 3, label: 'Prize 3', color: '#2ECC71', icon: <FiHeart size={20} /> },
-    { id: 4, label: 'Prize 4', color: '#F39C12', icon: <FiAward size={20} /> },
-    { id: 5, label: 'Prize 5', color: '#9B59B6', icon: <FiCoffee size={20} /> },
-    { id: 6, label: 'Prize 6', color: '#1ABC9C', icon: <FiSmile size={20} /> },
+    { id: 1, label: 'Prize 1', color: '#E74C3C', icon: <FiGift size={20} />, probability: 75 }, // 10% chance
+    { id: 2, label: 'Prize 2', color: '#3498DB', icon: <FiStar size={20} />, probability: 25 }, // 15% chance
+    { id: 3, label: 'Prize 3', color: '#2ECC71', icon: <FiHeart size={20} />, probability: 25 },  // 5% chance
+    { id: 4, label: 'Prize 4', color: '#F39C12', icon: <FiAward size={20} />, probability: 25 }, // 40% chance
   ];
 
   // Callback function when the wheel selects an option
@@ -36,7 +35,7 @@ const WhellGames = () => {
       <h1 className="text-3xl font-bold mb-8 text-center">Spin Wheel Game</h1>
       
       <div className="flex flex-col items-center">
-        {/* Render the SpinWhell component with our options */}
+        {/* Render the SpinWhell component with our options including probabilities */}
         <SpinWhell
           options={wheelOptions}
           onSelectOption={handleSpinResult}
@@ -46,9 +45,12 @@ const WhellGames = () => {
           fontSize={16}
           outerBorderColor="#333"
           spinButtonColor="#4CAF50"
+          showResetButton={true}
+          resetButtonText="TRY AGAIN"
+          resetButtonColor="#ff9800" // Orange color for reset button
         />
         
-        {/* Display the selected prize below the wheel */}
+        {/* Enhanced result display with probability information */}
         {result && (
           <div className="mt-8 p-5 bg-white rounded-lg shadow-md text-center">
             <h2 className="text-2xl font-bold">Congratulations!</h2>
@@ -56,6 +58,9 @@ const WhellGames = () => {
               {result.icon}
               <p className="text-xl">You won: <strong>{result.label}</strong></p>
             </div>
+            <p className="text-sm text-gray-500 mt-2">
+              This prize had a {result.probability}% chance of being selected
+            </p>
           </div>
         )}
       </div>

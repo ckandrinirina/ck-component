@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 // Define the props interface for type safety
 interface SpinWheelOption {
@@ -6,6 +6,7 @@ interface SpinWheelOption {
   label: string;
   color: string;
   icon?: React.ReactNode; // Optional icon component
+  probability?: number; // Added: Probability of this option being selected (0-100)
 }
 
 interface SpinWheelProps {
@@ -22,6 +23,10 @@ interface SpinWheelProps {
   spinButtonColor?: string;
   spinButtonTextColor?: string;
   innerCircleSize?: number; // Added prop for inner circle size control
+  showResetButton?: boolean; // Added prop to control reset button visibility
+  resetButtonText?: string; // Text for reset button
+  resetButtonColor?: string; // Color for reset button
+  resetButtonTextColor?: string; // Text color for reset button
 }
 
 const SpinWheel: React.FC<SpinWheelProps> = ({
@@ -38,11 +43,70 @@ const SpinWheel: React.FC<SpinWheelProps> = ({
   spinButtonColor = '#4CAF50',
   spinButtonTextColor = '#fff',
   innerCircleSize = 25, // Default to 25% of wheel size
+  showResetButton = true,
+  resetButtonText = 'RESET',
+  resetButtonColor = '#f44336', // Red color for reset button
+  resetButtonTextColor = '#fff',
 }) => {
   const [isSpinning, setIsSpinning] = useState(false);
   const [selectedOption, setSelectedOption] = useState<SpinWheelOption | null>(null);
   const [rotation, setRotation] = useState(0);
   const wheelRef = useRef<HTMLDivElement>(null);
+  const [normalizedOptions, setNormalizedOptions] = useState<SpinWheelOption[]>([]);
+  
+  // Normalize probabilities when options change
+  useEffect(() => {
+    setNormalizedOptions(normalizeOptionProbabilities(options));
+  }, [options]);
+
+  // Function to normalize probabilities to ensure they sum to 100%
+  const normalizeOptionProbabilities = (opts: SpinWheelOption[]): SpinWheelOption[] => {
+    // If no probability provided, assign equal probabilities
+    const optionsWithProbability = opts.map(opt => ({
+      ...opt,
+      probability: opt.probability !== undefined ? opt.probability : 100 / opts.length
+    }));
+
+    // Calculate total probability
+    const totalProbability = optionsWithProbability.reduce(
+      (sum, opt) => sum + (opt.probability || 0), 
+      0
+    );
+
+    // Normalize probabilities to sum to 100%
+    if (totalProbability !== 100 && totalProbability > 0) {
+      return optionsWithProbability.map(opt => ({
+        ...opt,
+        probability: ((opt.probability || 0) / totalProbability) * 100
+      }));
+    }
+
+    return optionsWithProbability;
+  };
+
+  // Function to select an option based on probability
+  const selectOptionByProbability = (): SpinWheelOption => {
+    const random = Math.random() * 100;
+    let cumulativeProbability = 0;
+    
+    for (const option of normalizedOptions) {
+      cumulativeProbability += option.probability || 0;
+      if (random <= cumulativeProbability) {
+        return option;
+      }
+    }
+    
+    // Fallback to last option (should rarely happen due to rounding)
+    return normalizedOptions[normalizedOptions.length - 1];
+  };
+
+  // Reset the wheel to its initial state
+  const resetWheel = () => {
+    if (isSpinning) return; // Don't reset while spinning
+    
+    setRotation(0);
+    setSelectedOption(null);
+  };
 
   // Ensure we have at least 2 options
   if (options.length < 2) {
@@ -80,29 +144,33 @@ const SpinWheel: React.FC<SpinWheelProps> = ({
     ].join(" ");
   };
 
-  // Spin the wheel
+  // Spin the wheel with probability-based selection
   const spinWheel = () => {
     if (isSpinning) return;
 
     // Set spinning state
     setIsSpinning(true);
     
-    // Calculate a random rotation between 2000 and 5000 degrees
-    // Adding current rotation to ensure continuous spins
-    const minRotation = 2000;
-    const maxRotation = 5000;
-    const randomSpin = Math.floor(Math.random() * (maxRotation - minRotation + 1) + minRotation);
-    const totalRotation = rotation + randomSpin;
+    // Select an option based on probability
+    const selected = selectOptionByProbability();
     
-    // Animate rotation
-    setRotation(totalRotation);
+    // Find the index of the selected option
+    const selectedIndex = normalizedOptions.findIndex(opt => opt.id === selected.id);
+    
+    // Calculate the rotation needed to land on the selected segment
+    // We need to ensure the wheel stops with the pointer at the middle of the segment
+    const segmentMiddleAngle = selectedIndex * anglePerSegment + (anglePerSegment / 2);
+    const destinationAngle = 360 - segmentMiddleAngle; // The wheel rotates clockwise
+    
+    // Add extra rotations (2-5 full spins) to make the spin look natural
+    const extraRotations = Math.floor(Math.random() * 3) + 2;
+    const totalRotation = destinationAngle + (extraRotations * 360);
+    
+    // Set the new total rotation (existing rotation + new rotation)
+    setRotation(rotation + totalRotation);
 
     // Calculate which segment will be selected after spin
     setTimeout(() => {
-      const finalRotation = totalRotation % 360;
-      const selectedIndex = Math.floor((360 - (finalRotation % 360)) / anglePerSegment);
-      const selected = options[selectedIndex % options.length];
-      
       setSelectedOption(selected);
       setIsSpinning(false);
       
@@ -263,12 +331,27 @@ const SpinWheel: React.FC<SpinWheelProps> = ({
         ></div>
       </div>
 
-      {/* Result display */}
-      {selectedOption && !isSpinning && (
-        <div className="mt-6 text-center">
-          <p className="text-lg">Result: <strong>{selectedOption.label}</strong></p>
-        </div>
-      )}
+      {/* Result display and reset button */}
+      <div className="mt-6 text-center">
+        {selectedOption && !isSpinning && (
+          <p className="text-lg mb-4">Result: <strong>{selectedOption.label}</strong></p>
+        )}
+        
+        {/* Reset button */}
+        {showResetButton && !isSpinning && selectedOption && (
+          <button
+            className="mt-4 px-6 py-2 rounded font-bold cursor-pointer"
+            style={{
+              backgroundColor: resetButtonColor,
+              color: resetButtonTextColor,
+              fontSize: `${fontSize * 0.8}px`,
+            }}
+            onClick={resetWheel}
+          >
+            {resetButtonText}
+          </button>
+        )}
+      </div>
     </div>
   );
 };
