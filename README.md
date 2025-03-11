@@ -1,18 +1,26 @@
-# Welcome to React Router!
+# CK Wheel Games Component
 
-A modern, production-ready template for building full-stack React applications using React Router.
-
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+A feature-rich demonstration of interactive wheel games and prize wheels built with React and React Router.
 
 ## Features
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+- 🎡 Customizable spin wheel component
+- 🎲 Probability-based prize selection
+- 🎨 Flexible theming and styling options
+- 🎯 Interactive user experience with animations
+- 🏆 Configurable prizes and outcomes
+- 🔒 TypeScript for type safety
+- 🚀 Server-side rendering with React Router
+- 🎉 TailwindCSS for modern styling
+
+## Wheel Component Features
+
+- Configurable wheel segments with custom colors and icons
+- Probability-based outcomes for weighted prize distribution
+- Smooth spin animations with customizable duration
+- Accessible UI with proper ARIA attributes
+- Reset functionality to replay the game
+- Responsive design that works on various screen sizes
 
 ## Getting Started
 
@@ -49,10 +57,10 @@ npm run build
 To build and run using Docker:
 
 ```bash
-docker build -t my-app .
+docker build -t wheel-games .
 
 # Run the container
-docker run -p 3000:3000 my-app
+docker run -p 3000:3000 wheel-games
 ```
 
 The containerized application can be deployed to any platform that supports Docker, including:
@@ -78,10 +86,15 @@ Make sure to deploy the output of `npm run build`
 │   └── server/    # Server-side code
 ```
 
-## Styling
+## Customization
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+The wheel component supports various configuration options:
+- Custom colors for segments
+- Custom icons for each prize
+- Probability weighting for prize distribution
+- Button styling and text
+- Size and animation duration
 
 ---
 
-Built with ❤️ using React Router.
+Built with ❤️ using React Router and TypeScript.
