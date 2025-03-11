@@ -17,10 +17,10 @@ const WhellGames = () => {
 
   // Example wheel options with different colors, icons, and probabilities
   const wheelOptions: WheelOption[] = [
-    { id: 1, label: 'Prize 1', color: '#E74C3C', icon: <FiGift size={20} />, probability: 75 }, // 10% chance
-    { id: 2, label: 'Prize 2', color: '#3498DB', icon: <FiStar size={20} />, probability: 25 }, // 15% chance
-    { id: 3, label: 'Prize 3', color: '#2ECC71', icon: <FiHeart size={20} />, probability: 25 },  // 5% chance
-    { id: 4, label: 'Prize 4', color: '#F39C12', icon: <FiAward size={20} />, probability: 25 }, // 40% chance
+    { id: 1, label: 'Prize 1', color: '#E74C3C', icon: <FiGift size={20} />, probability: 80 }, // 10% chance
+    { id: 2, label: 'Prize 2', color: '#3498DB', icon: <FiStar size={20} />, probability: 5 }, // 15% chance
+    { id: 3, label: 'Prize 3', color: '#2ECC71', icon: <FiHeart size={20} />, probability: 5 },  // 5% chance
+    { id: 4, label: 'Prize 4', color: '#F39C12', icon: <FiAward size={20} />, probability: 5 }, // 40% chance
   ];
 
   // Callback function when the wheel selects an option
